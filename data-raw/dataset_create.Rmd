@@ -5,33 +5,34 @@ date: "11/18/2021"
 output: html_document
 dataset:
   citation:
-      title: "NEW Test dataset"
+      title: "Social Data Commons: Ookla Broadband Speeds"
       subtitle: ""
-      dsDescriptionValue: "Virginia Standards of Learning Test Scores collected by the Virginia Department of Education (VDOE)"
+      dsDescriptionValue: "Virginia, District of Columbia, and Maryland Internet Speeds collected via Speedtest.net by Ookla"
       subject: "Social Sciences (Ex: Education, Politics, Sociology, Economics, Psychology)"
       productionDate: "2021-11-17"
-      timePeriodCoveredStart: "2015-01-01"
-      timePeriodCoveredEnd: "2021-01-01"
+      timePeriodCoveredStart: "2019-01-01"
+      timePeriodCoveredEnd: "2021-9-30"
       dataSources:
-        - "ACS"
-        - "County Health Rankings"
+        - "Ookla"
       author:
+        - authorName: "Alerte, Zach"
+          authorAffiliation: "Univeristy of Virginia"
+        - authorName: "Eric, Oh"
+          authorAffiliation: "Univeristy of Virginia"
         - authorName: "Schroeder, Aaron"
           authorAffiliation: "Univeristy of Virginia"
-        - authorName: "Charankevich, Hanna"
-          authorAffiliation: "Univeristy of Virginia"
-        - authorName: "Niagra, Bob"
-          authorAffiliation: "Univeristy of Waterloo"
       datasetContact:
         - datasetContactEmail: "ads7fg@virginia.edu"
           datasetContactName: "Schroeder, Aaron"
   geospatial:
     geographicCoverage:
       country: "United States"
-      state: "Virginia"
+      state: "Virginia, District of Columbia, Maryland"
     geographicUnit:
       - "State Health District"
       - "County"
+      - "Census Tract"
+      - "Block Group"
 ---
 
 ```{r setup, include=FALSE}
