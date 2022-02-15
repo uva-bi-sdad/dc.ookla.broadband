@@ -1,7 +1,9 @@
 ---
-title: "Untitled"
+title: "DMV_Ookla_Measurements_Clean"
 output: html_document
 ---
+
+# imports
 
 ```{r}
 # R imports - might have to install some
@@ -19,14 +21,17 @@ library(reticulate)
 library(tidygeocoder)
 ```
 
+# combine measurements to block group level
 
 ```{r}
 source("~/git/VDH/src/helper_functions.R")
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-va_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.va_bg_ookla_2019_2021q3_percent_overlap")
+va_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.va_bg_ookla_2019_2021_all_quarters_intersection_mobile")
+md_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.md_bg_ookla_2019_2021_all_quarters_intersection_mobile")
+dc_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.dc_bg_ookla_2019_2021_all_quarters_intersection_mobile")
 dbDisconnect(con)
 
-va_ookla_bg_2 <- va_ookla_bg %>%
+va_ookla_bg_2 <- st_drop_geometry(va_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(total_percent = sum(bg_percent, na.rm = T),
          true_percent = bg_percent / total_percent,
@@ -35,21 +40,23 @@ va_ookla_bg_2 <- va_ookla_bg %>%
          denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
          total_tests = sum(tests, na.rm = T),
          frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_devices= sum(avg_upload_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T),
-            download_tests = sum(avg_download_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_tests = sum(avg_lat_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T),
+         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
+         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
+         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
+         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
+         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
+         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
+         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
+  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
+            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.dc_bg_ookla_2019_2021q3_percent_overlap")
-dbDisconnect(con)
-
-dc_ookla_bg_2 <- dc_ookla_bg %>%
+md_ookla_bg_2 <- st_drop_geometry(md_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(total_percent = sum(bg_percent, na.rm = T),
          true_percent = bg_percent / total_percent,
@@ -58,21 +65,23 @@ dc_ookla_bg_2 <- dc_ookla_bg %>%
          denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
          total_tests = sum(tests, na.rm = T),
          frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_devices= sum(avg_upload_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T),
-            download_tests = sum(avg_download_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_tests = sum(avg_lat_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T),
+         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
+         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
+         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
+         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
+         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
+         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
+         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
+  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
+            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-md_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.md_bg_ookla_2019_2021q3_percent_overlap")
-dbDisconnect(con)
-
-md_ookla_bg_2 <- md_ookla_bg %>%
+dc_ookla_bg_2 <- st_drop_geometry(dc_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(total_percent = sum(bg_percent, na.rm = T),
          true_percent = bg_percent / total_percent,
@@ -81,17 +90,24 @@ md_ookla_bg_2 <- md_ookla_bg %>%
          denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
          total_tests = sum(tests, na.rm = T),
          frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_devices= sum(avg_upload_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * true_percent * frac_devices * tile_percent / denom_devices, na.rm = T),
-            download_tests = sum(avg_download_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_tests = sum(avg_lat_by_tests * true_percent * frac_tests * tile_percent / denom_tests, na.rm = T),
-            devices = sum(devices * tile_percent),
-            tests = sum(tests * tile_percent))
+         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
+         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
+         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
+         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
+         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
+         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
+         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
+  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
+            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
+            devices = sum(devices * tile_percent, na.rm = T),
+            tests = sum(tests * tile_percent, na.rm = T))
 ```
 
+# format block group measurements
 
 ```{r}
 va.bg <- get_acs(geography = "block group",
@@ -118,7 +134,7 @@ dc.bg <- get_acs(geography = "block group",
                  output = "wide",
                  geometry = TRUE)
 
-va_ookla_bg_3 <- st_drop_geometry(va_ookla_bg_2) %>%
+va_ookla_bg_3 <- va_ookla_bg_2 %>%
   merge(st_drop_geometry(va.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
          avg_down_using_tests = download_tests, avg_up_using_tests = upload_tests, avg_lat_using_tests = latency_tests,
@@ -131,7 +147,7 @@ va_ookla_bg_3 <- st_drop_geometry(va_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-md_ookla_bg_3 <- st_drop_geometry(md_ookla_bg_2) %>%
+md_ookla_bg_3 <- md_ookla_bg_2 %>%
   merge(st_drop_geometry(md.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
          avg_down_using_tests = download_tests, avg_up_using_tests = upload_tests, avg_lat_using_tests = latency_tests,
@@ -144,7 +160,7 @@ md_ookla_bg_3 <- st_drop_geometry(md_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-dc_ookla_bg_3 <- st_drop_geometry(dc_ookla_bg_2) %>%
+dc_ookla_bg_3 <- dc_ookla_bg_2 %>%
   merge(st_drop_geometry(dc.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
          avg_down_using_tests = download_tests, avg_up_using_tests = upload_tests, avg_lat_using_tests = latency_tests,
@@ -156,13 +172,6 @@ dc_ookla_bg_3 <- st_drop_geometry(dc_ookla_bg_2) %>%
          measure_units = ifelse(measure %in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), "Mb/sec",
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
-
-
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021q3_speed_measurements", va_ookla_bg_3)
-dc_dbWriteTable(con, "dc_digital_communications", "md_bg_ookla_2019_2021q3_speed_measurements", md_ookla_bg_3)
-dc_dbWriteTable(con, "dc_digital_communications", "dc_bg_ookla_2019_2021q3_speed_measurements", dc_ookla_bg_3)
-dbDisconnect(con)
 ```
 
 
@@ -233,7 +242,7 @@ va_ookla_bg_2$tract <- substr(va_ookla_bg_2$GEOID, 1, 11)
 va_ookla_bg_2$county <- substr(va_ookla_bg_2$GEOID, 1, 5)
 va_ookla_bg_2 <- left_join(va_ookla_bg_2, health_district_2[, c("county_id", "health_district", "geoid")], by = c("county" = "county_id"))
 
-va_ookla_tr <- st_drop_geometry(va_ookla_bg_2) %>%
+va_ookla_tr <- va_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -254,7 +263,7 @@ va_ookla_tr <- st_drop_geometry(va_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-va_ookla_ct <- st_drop_geometry(va_ookla_bg_2) %>%
+va_ookla_ct <- va_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -275,7 +284,7 @@ va_ookla_ct <- st_drop_geometry(va_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-va_ookla_hd <- st_drop_geometry(va_ookla_bg_2) %>%
+va_ookla_hd <- va_ookla_bg_2 %>%
   group_by(geoid, health_district, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -301,7 +310,7 @@ va_ookla_hd <- st_drop_geometry(va_ookla_bg_2) %>%
 md_ookla_bg_2$tract <- substr(md_ookla_bg_2$GEOID, 1, 11)
 md_ookla_bg_2$county <- substr(md_ookla_bg_2$GEOID, 1, 5)
 
-md_ookla_tr <- st_drop_geometry(md_ookla_bg_2) %>%
+md_ookla_tr <- md_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -322,7 +331,7 @@ md_ookla_tr <- st_drop_geometry(md_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-md_ookla_ct <- st_drop_geometry(md_ookla_bg_2) %>%
+md_ookla_ct <- md_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -346,7 +355,7 @@ md_ookla_ct <- st_drop_geometry(md_ookla_bg_2) %>%
 dc_ookla_bg_2$tract <- substr(dc_ookla_bg_2$GEOID, 1, 11)
 dc_ookla_bg_2$county <- substr(dc_ookla_bg_2$GEOID, 1, 5)
 
-dc_ookla_tr <- st_drop_geometry(dc_ookla_bg_2) %>%
+dc_ookla_tr <- dc_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -367,7 +376,7 @@ dc_ookla_tr <- st_drop_geometry(dc_ookla_bg_2) %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
-dc_ookla_ct <- st_drop_geometry(dc_ookla_bg_2) %>%
+dc_ookla_ct <- dc_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
             upload_devices = sum(upload_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -390,101 +399,58 @@ dc_ookla_ct <- st_drop_geometry(dc_ookla_bg_2) %>%
 
 ```
 
+# send to database
 
 ```{r}
-a <- left_join(md.bg, md_ookla_bg_3[md_ookla_bg_3$measure == "avg_down_using_devices",], by = c("GEOID" = "geoid"))
-b <- left_join(md.tr, md_ookla_tr[md_ookla_tr$measure == "avg_down_using_devices",], by = c("GEOID" = "geoid"))
-a <- a[!st_is_empty(a), ] %>% drop_na()
-b <- b[!st_is_empty(b), ] %>% drop_na()
+source("~/git/VDH/src/helper_functions.R")
+con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
+dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021_speed_measurements_mobile", va_ookla_bg_3)
+dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021_speed_measurements_mobile", va_ookla_tr)
+dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021_speed_measurements_mobile", va_ookla_ct)
+dc_dbWriteTable(con, "dc_digital_communications", "va_hd_ookla_2019_2021_speed_measurements_mobile", va_ookla_hd)
 
-tm_shape(a[a$year == "2019",], unit = "mi") +
-  tm_polygons(col = 'value',
-              style = 'fisher',
-              palette = 'Blues',
-              border.alpha = 0,
-              title = 'Mean Ookla Download Speed (Mbps)',
-              breaks = c(0, 25, 100, 300)) +
-  tm_shape(md.ct) +
-  tm_polygons(alpha = 0) +
-  tm_scale_bar(position = c('left', 'top')) +
-  tm_layout(main.title = 'Mean Ookla Download Speed (Mbps)',
-            main.title.size = 0.95, frame = F,
-            legend.outside = T, legend.outside.position = 'right')
+dc_dbWriteTable(con, "dc_digital_communications", "md_bg_ookla_2019_2021_speed_measurements_mobile", md_ookla_bg_3)
+dc_dbWriteTable(con, "dc_digital_communications", "md_tr_ookla_2019_2021_speed_measurements_mobile", md_ookla_tr)
+dc_dbWriteTable(con, "dc_digital_communications", "md_ct_ookla_2019_2021_speed_measurements_mobile", md_ookla_ct)
 
-tm_shape(b[b$year == "2019",], unit = "mi") +
-  tm_polygons(col = 'value',
-              style = 'fisher',
-              palette = 'Blues',
-              border.alpha = 0,
-              title = 'Mean Ookla Download Speed (Mbps)',
-              breaks = c(0, 25, 100, 300)) +
-  tm_shape(md.ct) +
-  tm_polygons(alpha = 0) +
-  tm_scale_bar(position = c('left', 'top')) +
-  tm_layout(main.title = 'Mean Ookla Download Speed (Mbps)',
-            main.title.size = 0.95, frame = F,
-            legend.outside = T, legend.outside.position = 'right')
+dc_dbWriteTable(con, "dc_digital_communications", "dc_bg_ookla_2019_2021_speed_measurements_mobile", dc_ookla_bg_3)
+dc_dbWriteTable(con, "dc_digital_communications", "dc_tr_ookla_2019_2021_speed_measurements_mobile", dc_ookla_tr)
+dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021_speed_measurements_mobile", dc_ookla_ct)
+dbDisconnect(con)
 ```
 
-
-```{r}
-a <- left_join(va.tr, va_ookla_tr[va_ookla_tr$measure == "avg_down_using_devices",], by = c("GEOID" = "geoid"))
-b <- left_join(va.ct, va_ookla_ct[va_ookla_ct$measure == "avg_down_using_devices",], by = c("GEOID" = "geoid"))
-a <- a[!st_is_empty(a), ] %>% drop_na(value)
-b <- b[!st_is_empty(b), ] %>% drop_na(value)
-
-tm_shape(a[a$year == "2019",], unit = "mi") +
-  tm_polygons(col = 'value',
-              style = 'fisher',
-              palette = 'Blues',
-              border.alpha = 0,
-              title = 'Mean Ookla Download Speed (Mbps)',
-              breaks = c(0, 25, 100, 300)) +
-  tm_shape(va.ct ) +
-  tm_polygons(alpha = 0) +
-  tm_scale_bar(position = c('left', 'top')) +
-  tm_layout(main.title = 'Mean Ookla Download Speed (Mbps)',
-            main.title.size = 0.95, frame = F,
-            legend.outside = T, legend.outside.position = 'right')
-
-tm_shape(b[b$year == "2019",], unit = "mi") +
-  tm_polygons(col = 'value',
-              style = 'fisher',
-              palette = 'Blues',
-              border.alpha = 0,
-              title = 'Mean Ookla Download Speed (Mbps)',
-              breaks = c(0, 25, 100, 300)) +
-  tm_shape(va.ct) +
-  tm_polygons(alpha = 0) +
-  tm_scale_bar(position = c('left', 'top')) +
-  tm_layout(main.title = 'Mean Ookla Download Speed (Mbps)',
-            main.title.size = 0.95, frame = F,
-            legend.outside = T, legend.outside.position = 'right')
-```
 
 
 ```{r}
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021q3_speed_measurements", va_ookla_tr)
-dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021q3_speed_measurements", va_ookla_ct)
-dc_dbWriteTable(con, "dc_digital_communications", "va_hd_ookla_2019_2021q3_speed_measurements", va_ookla_hd)
+va_ookla_bg_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_bg_ookla_2019_2021_speed_measurements_mobile")
+va_ookla_tr_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_tr_ookla_2019_2021_speed_measurements_mobile")
+va_ookla_ct_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_ct_ookla_2019_2021_speed_measurements_mobile")
 
-dc_dbWriteTable(con, "dc_digital_communications", "md_tr_ookla_2019_2021q3_speed_measurements", md_ookla_tr)
-dc_dbWriteTable(con, "dc_digital_communications", "md_ct_ookla_2019_2021q3_speed_measurements", md_ookla_ct)
+md_ookla_bg_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_bg_ookla_2019_2021_speed_measurements_mobile")
+md_ookla_tr_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_tr_ookla_2019_2021_speed_measurements_mobile")
+md_ookla_ct_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_ct_ookla_2019_2021_speed_measurements_mobile")
 
-dc_dbWriteTable(con, "dc_digital_communications", "dc_tr_ookla_2019_2021q3_speed_measurements", dc_ookla_tr)
-dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021q3_speed_measurements", dc_ookla_ct)
+dc_ookla_bg_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_bg_ookla_2019_2021_speed_measurements_mobile")
+dc_ookla_tr_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_tr_ookla_2019_2021_speed_measurements_mobile")
+dc_ookla_ct_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_ct_ookla_2019_2021_speed_measurements_mobile")
+dbDisconnect(con)
+
+ncr_ookla_bg <- rbind(va_ookla_bg_for_ncr, md_ookla_bg_for_ncr, dc_ookla_bg_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
+ncr_ookla_tr <- rbind(va_ookla_tr_for_ncr, md_ookla_tr_for_ncr, dc_ookla_tr_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
+ncr_ookla_ct <- rbind(va_ookla_ct_for_ncr, md_ookla_ct_for_ncr, dc_ookla_ct_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
+
+con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_bg_ookla_2019_2021_speed_measurements_mobile", ncr_ookla_bg)
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_tr_ookla_2019_2021_speed_measurements_mobile", ncr_ookla_tr)
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_ct_ookla_2019_2021_speed_measurements_mobile", ncr_ookla_ct)
 dbDisconnect(con)
 ```
 
-# Calculate distributions for VA, MD, AND DC (LITERALLY COPY AND PASTE...)
-# Virginia
-```{r}
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-bg_data_quarters <- st_read(con, query = "SELECT * FROM dc_working.va_tile_ookla_2019_2021q3_all_quarters_intersection")
-dbDisconnect(con)
 
-bg_data_quarters2 <- bg_data_quarters %>%
+
+```{r}
+bg_data_quarters2 <- st_drop_geometry(va_ookla_bg) %>%
   group_by(GEOID, year, quarter) %>%
   mutate(total_percent = sum(bg_percent),
          true_percent = bg_percent / total_percent,
@@ -494,22 +460,17 @@ bg_data_quarters2 <- bg_data_quarters %>%
          total_tests = sum(tests),
          frac_tests = tests / total_tests,
          denom_tests = sum(frac_tests * true_percent * tile_percent)) %>%
-  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices),
-            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices),
+  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
+            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
             latency_devices = sum(avg_lat_ms * true_percent * frac_devices * tile_percent / denom_devices),
-            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests),
-            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests),
+            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
+            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
             latency_tests = sum(avg_lat_ms * true_percent * frac_tests * tile_percent / denom_tests),
             devices = sum(devices * tile_percent),
-            tests = sum(tests * tile_percent))
+            tests = sum(tests * tile_percent)) %>%
+  mutate(county = substr(GEOID, 1, 5))
 
-bg_data_quarters2$county <- substr(bg_data_quarters2$GEOID, 1, 5)
-# bg_data_quarters2$download_devices <- bg_data_quarters2$download_devices / 1000
-# bg_data_quarters2$download_tests <- bg_data_quarters2$download_tests / 1000
-# bg_data_quarters2$upload_devices <- bg_data_quarters2$upload_devices / 1000
-# bg_data_quarters2$upload_tests <- bg_data_quarters2$upload_tests / 1000
-
-va_merged_data <- merge(st_drop_geometry(bg_data_quarters2), va_ookla_ct[va_ookla_ct$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
+va_merged_data <- merge(bg_data_quarters2, va_ookla_ct_for_ncr[va_ookla_ct_for_ncr$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
 
 va_merged_data_down_devices <- va_merged_data %>%
   group_by(county, year) %>%
@@ -541,6 +502,7 @@ va.bg <- get_acs(geography = "block group",
 va.bg$w_internet <- va.bg$tpopE - va.bg$no_internetE
 ```
 
+#
 
 ```{r}
 va_merged_data_down_devices$above_100_down <- pnorm(100, va_merged_data_down_devices$download_devices,
@@ -589,6 +551,7 @@ va_merged_data_d <- st_drop_geometry(left_join(va.bg, va_merged_data_c, by = "GE
          perc_total_25_3_using_tests = rowMins(cbind(perc_total_above_25_down_using_tests, perc_total_above_3_up_using_tests)))
 ```
 
+#
 
 ```{r}
 va_merged_data_e <- va_merged_data_d %>%
@@ -733,14 +696,10 @@ va_hd_percs <- va_merged_data_e %>%
   drop_na()
 ```
 
-
 # DC
-```{r}
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-bg_data_quarters <- st_read(con, query = "SELECT * FROM dc_working.dc_tile_ookla_2019_2021q3_all_quarters_intersection")
-dbDisconnect(con)
 
-bg_data_quarters2 <- bg_data_quarters %>%
+```{r}
+bg_data_quarters2 <- st_drop_geometry(dc_ookla_bg) %>%
   group_by(GEOID, year, quarter) %>%
   mutate(total_percent = sum(bg_percent),
          true_percent = bg_percent / total_percent,
@@ -750,22 +709,17 @@ bg_data_quarters2 <- bg_data_quarters %>%
          total_tests = sum(tests),
          frac_tests = tests / total_tests,
          denom_tests = sum(frac_tests * true_percent * tile_percent)) %>%
-  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices),
-            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices),
+  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
+            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
             latency_devices = sum(avg_lat_ms * true_percent * frac_devices * tile_percent / denom_devices),
-            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests),
-            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests),
+            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
+            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
             latency_tests = sum(avg_lat_ms * true_percent * frac_tests * tile_percent / denom_tests),
             devices = sum(devices * tile_percent),
-            tests = sum(tests * tile_percent))
+            tests = sum(tests * tile_percent)) %>%
+  mutate(county = substr(GEOID, 1, 5))
 
-bg_data_quarters2$county <- substr(bg_data_quarters2$GEOID, 1, 5)
-bg_data_quarters2$download_devices <- bg_data_quarters2$download_devices / 1000
-bg_data_quarters2$download_tests <- bg_data_quarters2$download_tests / 1000
-bg_data_quarters2$upload_devices <- bg_data_quarters2$upload_devices / 1000
-bg_data_quarters2$upload_tests <- bg_data_quarters2$upload_tests / 1000
-
-dc_merged_data <- merge(st_drop_geometry(bg_data_quarters2), dc_ookla_ct[dc_ookla_ct$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
+dc_merged_data <- merge(bg_data_quarters2, dc_ookla_ct_for_ncr[dc_ookla_ct_for_ncr$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
 
 dc_merged_data_down_devices <- dc_merged_data %>%
   group_by(county, year) %>%
@@ -795,8 +749,6 @@ dc.bg <- get_acs(geography = "block group",
            output = "wide",
            geometry = TRUE)
 dc.bg$w_internet <- dc.bg$tpopE - dc.bg$no_internetE
-
-dc_merged_data
 ```
 
 
@@ -960,19 +912,12 @@ dc_ct_percs <- dc_merged_data_e %>%
             perc_total_100_20_using_tests = sum(pop_total_100_20_using_tests, na.rm = T) / sum(tpop, na.rm = T),
             perc_total_25_3_using_tests = sum(pop_total_25_3_using_tests, na.rm = T) / sum(tpop, na.rm = T)) %>%
   drop_na()
-
-dc_merged_data_d
 ```
 
-
-
 # Maryland
-```{r}
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-bg_data_quarters <- st_read(con, query = "SELECT * FROM dc_working.md_tile_ookla_2019_2021q3_all_quarters_intersection")
-dbDisconnect(con)
 
-bg_data_quarters2 <- bg_data_quarters %>%
+```{r}
+bg_data_quarters2 <- st_drop_geometry(md_ookla_bg) %>%
   group_by(GEOID, year, quarter) %>%
   mutate(total_percent = sum(bg_percent),
          true_percent = bg_percent / total_percent,
@@ -982,22 +927,17 @@ bg_data_quarters2 <- bg_data_quarters %>%
          total_tests = sum(tests),
          frac_tests = tests / total_tests,
          denom_tests = sum(frac_tests * true_percent * tile_percent)) %>%
-  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices),
-            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices),
+  summarise(download_devices = sum(avg_d_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
+            upload_devices = sum(avg_u_kbps * true_percent * frac_devices * tile_percent / denom_devices / 1000),
             latency_devices = sum(avg_lat_ms * true_percent * frac_devices * tile_percent / denom_devices),
-            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests),
-            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests),
+            download_tests = sum(avg_d_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
+            upload_tests = sum(avg_u_kbps * true_percent * frac_tests * tile_percent / denom_tests / 1000),
             latency_tests = sum(avg_lat_ms * true_percent * frac_tests * tile_percent / denom_tests),
             devices = sum(devices * tile_percent),
-            tests = sum(tests * tile_percent))
+            tests = sum(tests * tile_percent)) %>%
+  mutate(county = substr(GEOID, 1, 5))
 
-bg_data_quarters2$county <- substr(bg_data_quarters2$GEOID, 1, 5)
-bg_data_quarters2$download_devices <- bg_data_quarters2$download_devices / 1000
-bg_data_quarters2$download_tests <- bg_data_quarters2$download_tests / 1000
-bg_data_quarters2$upload_devices <- bg_data_quarters2$upload_devices / 1000
-bg_data_quarters2$upload_tests <- bg_data_quarters2$upload_tests / 1000
-
-md_merged_data <- merge(st_drop_geometry(bg_data_quarters2), md_ookla_ct[md_ookla_ct$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
+md_merged_data <- merge(bg_data_quarters2, md_ookla_ct_for_ncr[md_ookla_ct_for_ncr$measure%in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), c("geoid", "value", "year", "measure")][], by.x = c("county", "year"), by.y = c("geoid", "year"))
 
 md_merged_data_down_devices <- md_merged_data %>%
   group_by(county, year) %>%
@@ -1193,6 +1133,7 @@ md_ct_percs <- md_merged_data_e %>%
 ```
 
 
+
 ```{r}
 # tract level
 final_va_tr_percs <- va_tr_percs %>%
@@ -1206,7 +1147,7 @@ final_va_tr_percs <- va_tr_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = tract, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 final_dc_tr_percs <- dc_tr_percs %>%
@@ -1220,7 +1161,7 @@ final_dc_tr_percs <- dc_tr_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = tract, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 final_md_tr_percs <- md_tr_percs %>%
@@ -1234,7 +1175,7 @@ final_md_tr_percs <- md_tr_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = tract, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "tract", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 # county
@@ -1249,7 +1190,7 @@ final_va_ct_percs <- va_ct_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = county, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 final_dc_ct_percs <- dc_ct_percs %>%
@@ -1263,7 +1204,7 @@ final_dc_ct_percs <- dc_ct_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = county, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 final_md_ct_percs <- md_ct_percs %>%
@@ -1277,7 +1218,7 @@ final_md_ct_percs <- md_ct_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(geoid = county, region_name = NAME) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county") %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), region_type = "county", value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 # health district
@@ -1292,24 +1233,27 @@ final_va_hd_percs <- va_hd_percs %>%
                            "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices",
                            "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests")) %>%
   rename(region_name = health_district) %>%
-  mutate(measure_type = "percent", measure_units = as.character(NA)) %>%
+  mutate(measure_type = "percent", measure_units = as.character(NA), value = value * 100) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
-
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021q3_percent_above_threshold", final_va_tr_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021q3_percent_above_threshold", final_va_ct_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "va_hd_ookla_2019_2021q3_percent_above_threshold", final_va_hd_percs)
-
-dc_dbWriteTable(con, "dc_digital_communications", "dc_tr_ookla_2019_2021q3_percent_above_threshold", final_dc_tr_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021q3_percent_above_threshold", final_dc_ct_percs)
-
-dc_dbWriteTable(con, "dc_digital_communications", "md_tr_ookla_2019_2021q3_percent_above_threshold", final_md_tr_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "md_ct_ookla_2019_2021q3_percent_above_threshold", final_md_ct_percs)
-dbDisconnect(con)
 ```
 
 
+```{r}
+con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
+dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021_percent_above_threshold_mobile", final_va_tr_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021_percent_above_threshold_mobile", final_va_ct_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "va_hd_ookla_2019_2021_percent_above_threshold_mobile", final_va_hd_percs)
+
+dc_dbWriteTable(con, "dc_digital_communications", "dc_tr_ookla_2019_2021_percent_above_threshold_mobile", final_dc_tr_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021_percent_above_threshold_mobile", final_dc_ct_percs)
+
+dc_dbWriteTable(con, "dc_digital_communications", "md_tr_ookla_2019_2021_percent_above_threshold_mobile", final_md_tr_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "md_ct_ookla_2019_2021_percent_above_threshold_mobile", final_md_ct_percs)
+dbDisconnect(con)
+```
+
 # only thing that we are missing is block group level percent above/below threshold
+
 ```{r}
 final_va_bg_percs <- va_merged_data_e %>%
   gather(measure, value, c("perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices",
@@ -1354,104 +1298,40 @@ final_md_bg_percs <- md_merged_data_e %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021q3_percent_above_threshold", final_va_bg_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "dc_bg_ookla_2019_2021q3_percent_above_threshold", final_dc_bg_percs)
-dc_dbWriteTable(con, "dc_digital_communications", "md_bg_ookla_2019_2021q3_percent_above_threshold", final_md_bg_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021_percent_above_threshold_mobile", final_va_bg_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "dc_bg_ookla_2019_2021_percent_above_threshold_mobile", final_dc_bg_percs)
+dc_dbWriteTable(con, "dc_digital_communications", "md_bg_ookla_2019_2021_percent_above_threshold_mobile", final_md_bg_percs)
 dbDisconnect(con)
 ```
 
-
-```{r}
-dmv_ookla_bg <- rbind(va_ookla_bg_3[substr(va_ookla_bg_3$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_bg_3, md_ookla_bg_3[substr(md_ookla_bg_3$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_tr <- rbind(va_ookla_tr[substr(va_ookla_tr$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_tr, md_ookla_tr[substr(md_ookla_tr$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_ct <- rbind(va_ookla_ct[va_ookla_ct$geoid %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_ct, md_ookla_ct[md_ookla_ct$geoid %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_cttrbg <- rbind(dmv_ookla_bg, dmv_ookla_tr, dmv_ookla_ct)
-
-dmv_ooklav_bg_percs <- rbind(final_va_bg_percs[substr(final_va_bg_percs$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], final_dc_bg_percs, final_md_bg_percs[substr(final_md_bg_percs$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_tr_percs <- rbind(final_va_tr_percs[substr(final_va_tr_percs$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], final_dc_tr_percs, final_md_tr_percs[substr(final_md_tr_percs$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_ct_percs <- rbind(final_va_ct_percs[final_va_ct_percs$geoid %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], final_dc_ct_percs, final_md_ct_percs[final_md_ct_percs$geoid %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_cttrbg_percs <- rbind(dmv_ookla_bg_percs, dmv_ookla_tr_percs, dmv_ookla_ct_percs)
-
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_dbWriteTable(con, "dc_digital_communications", "dmv_cttrbg_ookla_2019_2021q3_speed_measurements", dmv_ookla_cttrbg)
-dc_dbWriteTable(con, "dc_digital_communications", "dmv_cttrbg_sdad_2019_2021q3_percent_above_threshold", dmv_ookla_cttrbg_percs)
-dbDisconnect(con)
-
-dmv_ookla_cttrbg_percs
-```
 
 
 ```{r}
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-va_ookla_bg <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_bg_ookla_2019_2021q3_percent_above_threshold")
-va_ookla_tr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_tr_ookla_2019_2021q3_percent_above_threshold")
-va_ookla_ct <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_ct_ookla_2019_2021q3_percent_above_threshold")
-va_ookla_hd <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_hd_ookla_2019_2021q3_percent_above_threshold")
+va_ookla_bg_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_bg_ookla_2019_2021_percent_above_threshold_mobile")
+va_ookla_tr_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_tr_ookla_2019_2021_percent_above_threshold_mobile")
+va_ookla_ct_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_ct_ookla_2019_2021_percent_above_threshold_mobile")
+
+md_ookla_bg_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_bg_ookla_2019_2021_percent_above_threshold_mobile")
+md_ookla_tr_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_tr_ookla_2019_2021_percent_above_threshold_mobile")
+md_ookla_ct_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_ct_ookla_2019_2021_percent_above_threshold_mobile")
+
+dc_ookla_bg_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_bg_ookla_2019_2021_percent_above_threshold_mobile")
+dc_ookla_tr_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_tr_ookla_2019_2021_percent_above_threshold_mobile")
+dc_ookla_ct_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_ct_ookla_2019_2021_percent_above_threshold_mobile")
 dbDisconnect(con)
 
-hist(va_ookla_bg$value)
-hist(va_ookla_tr$value)
-hist(va_ookla_ct$value)
-hist(va_ookla_hd$value)
+ncr_ookla_bg.2 <- rbind(va_ookla_bg_for_ncr.2, md_ookla_bg_for_ncr.2, dc_ookla_bg_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
+ncr_ookla_tr.2 <- rbind(va_ookla_tr_for_ncr.2, md_ookla_tr_for_ncr.2, dc_ookla_tr_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
+ncr_ookla_ct.2 <- rbind(va_ookla_ct_for_ncr.2, md_ookla_ct_for_ncr.2, dc_ookla_ct_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 
-# MD
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-md_ookla_bg <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_bg_ookla_2019_2021q3_percent_above_threshold")
-md_ookla_tr <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_tr_ookla_2019_2021q3_percent_above_threshold")
-md_ookla_ct <- st_read(con, query = "SELECT * FROM dc_digital_communications.md_ct_ookla_2019_2021q3_percent_above_threshold")
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_bg_ookla_2019_2021_percent_above_threshold_mobile", ncr_ookla_bg.2)
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_tr_ookla_2019_2021_percent_above_threshold_mobile", ncr_ookla_tr.2)
+dc_dbWriteTable(con, "dc_digital_communications", "ncr_ct_ookla_2019_2021_percent_above_threshold_mobile", ncr_ookla_ct.2)
 dbDisconnect(con)
-
-hist(md_ookla_bg$value)
-hist(md_ookla_tr$value)
-hist(md_ookla_ct$value)
-
-
-# MD
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-dc_ookla_bg <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_bg_ookla_2019_2021q3_percent_above_threshold")
-dc_ookla_tr <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_tr_ookla_2019_2021q3_percent_above_threshold")
-dc_ookla_ct <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_ct_ookla_2019_2021q3_percent_above_threshold")
-dbDisconnect(con)
-
-hist(dc_ookla_bg$value)
-hist(dc_ookla_tr$value)
-hist(dc_ookla_ct$value)
-# 
-# va_ookla_tr$value <- va_ookla_tr$value*100
-# va_ookla_ct$value <- va_ookla_ct$value*100
-# va_ookla_hd$value <- va_ookla_hd$value*100
-# md_ookla_tr$value <- md_ookla_tr$value*100
-# md_ookla_ct$value <- md_ookla_ct$value*100
-# dc_ookla_tr$value <- dc_ookla_tr$value*100
-# dc_ookla_ct$value <- dc_ookla_ct$value*100
-# 
-# con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-# dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021q3_percent_above_threshold", va_ookla_tr)
-# dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021q3_percent_above_threshold", va_ookla_ct)
-# dc_dbWriteTable(con, "dc_digital_communications", "va_hd_ookla_2019_2021q3_percent_above_threshold", va_ookla_hd)
-# 
-# dc_dbWriteTable(con, "dc_digital_communications", "md_tr_ookla_2019_2021q3_percent_above_threshold", md_ookla_tr)
-# dc_dbWriteTable(con, "dc_digital_communications", "md_ct_ookla_2019_2021q3_percent_above_threshold", md_ookla_ct)
-# 
-# dc_dbWriteTable(con, "dc_digital_communications", "dc_tr_ookla_2019_2021q3_percent_above_threshold", dc_ookla_tr)
-# dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021q3_percent_above_threshold", dc_ookla_ct)
-# dbDisconnect(con)
 ```
 
-
-```{r}
-dmv_ooklav_bg_percs <- rbind(va_ookla_bg[substr(va_ookla_bg$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_bg, md_ookla_bg[substr(md_ookla_bg$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_tr_percs <- rbind(va_ookla_tr[substr(va_ookla_tr$geoid, 1, 5) %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_tr, md_ookla_tr[substr(md_ookla_tr$geoid, 1, 5) %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_ct_percs <- rbind(va_ookla_ct[va_ookla_ct$geoid %in% c(51013, 51059, 51107, 51510, 51600, 51153, 51683, 51685, 51610),], dc_ookla_ct, md_ookla_ct[md_ookla_ct$geoid %in% c(24031, 24033, 24017, 24021),])
-dmv_ookla_cttrbg_percs <- rbind(dmv_ookla_bg_percs, dmv_ookla_tr_percs, dmv_ookla_ct_percs)
-
-con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-# dc_dbWriteTable(con, "dc_digital_communications", "dmv_cttrbg_ookla_2019_2021q3_speed_measurements", dmv_ookla_cttrbg)
-dc_dbWriteTable(con, "dc_digital_communications", "dmv_cttrbg_sdad_2019_2021q3_percent_above_threshold", dmv_ookla_cttrbg_percs)
-dbDisconnect(con)
-
-dmv_ookla_cttrbg_percs
-```
 
 
 
