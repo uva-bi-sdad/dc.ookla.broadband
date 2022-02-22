@@ -17,19 +17,15 @@ dataset_doi <- readLines(here::here("data/dataset_doi"))[1]
 
 ## Code you used to create dataset - LIST BELOW
 
-Ex: dc_digital_communications.dmv_cttrbg_ookla_2019_2021q3_speed_measurements
-
-database_schema_name.database_table_name: file_name_that_created_this_table.R/RMD
+dc_digital_communications.ncr_bg_ookla_2019_2021_percent_above_threshold_mobile, dc_digital_communications.ncr_tr_ookla_2019_2021_percent_above_threshold_mobile, dc_digital_communications.ncr_ct_ookla_2019_2021_percent_above_threshold_mobile: DMV_Ookla_Measurements_Mobile
 
 
 ```{r data}
 
 # Ex database_table_name: "va_hd_vdoe_2019_2021_3rd_grade_mean_median_read_score"
-table_names = c("va_bg_ookla_2019_2021q3_speed_measurements", "va_tr_ookla_2019_2021q3_speed_measurements",
-                "va_ct_ookla_2019_2021q3_speed_measurements", "va_hd_ookla_2019_2021q3_speed_measurements",
-                "md_bg_ookla_2019_2021q3_speed_measurements", "md_tr_ookla_2019_2021q3_speed_measurements",
-                "md_ct_ookla_2019_2021q3_speed_measurements", "dc_bg_ookla_2019_2021q3_speed_measurements",
-                "dc_tr_ookla_2019_2021q3_speed_measurements", "dc_ct_ookla_2019_2021q3_speed_measurements")
+table_names = c("ncr_bg_ookla_2019_2021_percent_above_threshold_mobile",
+                "ncr_tr_ookla_2019_2021_percent_above_threshold_mobile",
+                "ncr_ct_ookla_2019_2021_percent_above_threshold_mobile")
     
 con <- get_db_conn()
 
@@ -50,7 +46,7 @@ if (length(table_names) > 1)
 
 DBI::dbDisconnect(con)
 
-all_geos_file_name <- "dcmdva_hdcttrbg_2019_2021q3_speed_measurements"  #Ex: "va_vdoe_2019_2021_3rd_grade_mean_median_read_score"
+all_geos_file_name <- "ncr_cttrbg_2019_2021_percent_above_threshold_mobile"  #Ex: "va_vdoe_2019_2021_3rd_grade_mean_median_read_score"
 assign(all_geos_file_name, all_geos_dat)
 ```
 

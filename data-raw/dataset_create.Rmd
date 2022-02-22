@@ -5,7 +5,7 @@ date: "11/18/2021"
 output: html_document
 dataset:
   citation:
-      title: "Social Data Commons: Ookla Broadband Speeds"
+      title: "Social Data Commons: Digital Communications: Ookla Broadband Speeds"
       subtitle: ""
       dsDescriptionValue: "Virginia, District of Columbia, and Maryland Internet Speeds collected via Speedtest.net by Ookla"
       subject: "Social Sciences (Ex: Education, Politics, Sociology, Economics, Psychology)"
@@ -15,7 +15,7 @@ dataset:
       dataSources:
         - "Ookla"
       author:
-        - authorName: "Alerte, Zach"
+        - authorName: "Alerte, Zachary"
           authorAffiliation: "Univeristy of Virginia"
         - authorName: "Eric, Oh"
           authorAffiliation: "Univeristy of Virginia"
