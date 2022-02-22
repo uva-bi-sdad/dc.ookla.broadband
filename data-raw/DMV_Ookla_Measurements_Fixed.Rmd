@@ -33,76 +33,40 @@ dbDisconnect(con)
 
 va_ookla_bg_2 <- st_drop_geometry(va_ookla_bg)  %>%
   group_by(GEOID, year) %>%
-  mutate(total_percent = sum(bg_percent, na.rm = T),
-         true_percent = bg_percent / total_percent,
-         total_devices = sum(devices, na.rm = T),
-         frac_devices = devices / total_devices,
-         denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
-         total_tests = sum(tests, na.rm = T),
-         frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
-         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
-         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
-         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
-         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
-         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
-         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
-            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
+  mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
+         frac_tests = tests * tile_percent / sum(tests * tile_percent, na.rm = T)) %>%
+  summarize(download_devices = sum(avg_d_kbps * frac_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_d_kbps * frac_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_u_kbps * frac_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_u_kbps * frac_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_ms * frac_devices, na.rm = T),
+            latency_tests = sum(avg_lat_ms * frac_tests),
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
 md_ookla_bg_2 <- st_drop_geometry(md_ookla_bg)  %>%
   group_by(GEOID, year) %>%
-  mutate(total_percent = sum(bg_percent, na.rm = T),
-         true_percent = bg_percent / total_percent,
-         total_devices = sum(devices, na.rm = T),
-         frac_devices = devices / total_devices,
-         denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
-         total_tests = sum(tests, na.rm = T),
-         frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
-         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
-         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
-         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
-         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
-         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
-         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
-            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
+  mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
+         frac_tests = tests * tile_percent / sum(tests * tile_percent, na.rm = T)) %>%
+  summarize(download_devices = sum(avg_d_kbps * frac_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_d_kbps * frac_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_u_kbps * frac_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_u_kbps * frac_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_ms * frac_devices, na.rm = T),
+            latency_tests = sum(avg_lat_ms * frac_tests),
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
 dc_ookla_bg_2 <- st_drop_geometry(dc_ookla_bg)  %>%
   group_by(GEOID, year) %>%
-  mutate(total_percent = sum(bg_percent, na.rm = T),
-         true_percent = bg_percent / total_percent,
-         total_devices = sum(devices, na.rm = T),
-         frac_devices = devices / total_devices,
-         denom_devices = sum(frac_devices * true_percent * tile_percent, na.rm = T),
-         total_tests = sum(tests, na.rm = T),
-         frac_tests = tests / total_tests,
-         denom_tests = sum(frac_tests * true_percent * tile_percent, na.rm = T),
-         avg_download_by_devices = sum(avg_d_kbps * devices) / sum(devices),
-         avg_download_by_tests = sum(avg_d_kbps * tests) / sum(tests),
-         avg_upload_by_devices = sum(avg_u_kbps * devices) / sum(devices),
-         avg_upload_by_tests = sum(avg_u_kbps * tests) / sum(tests),
-         avg_lat_by_devices = sum(avg_lat_ms * devices) / sum(devices),
-         avg_lat_by_tests = sum(avg_lat_ms * tests) / sum(tests)) %>%
-  summarise(download_devices = sum(avg_download_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            download_tests = sum(avg_download_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            upload_devices = sum(avg_upload_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T) / 1000,
-            upload_tests = sum(avg_upload_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T) / 1000,
-            latency_devices = sum(avg_lat_by_devices * frac_devices * true_percent * tile_percent / denom_devices, na.rm = T),
-            latency_tests = sum(avg_lat_by_tests * frac_tests * true_percent * tile_percent / denom_tests, na.rm = T),
+  mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
+         frac_tests = tests * tile_percent / sum(tests * tile_percent, na.rm = T)) %>%
+  summarize(download_devices = sum(avg_d_kbps * frac_devices, na.rm = T) / 1000,
+            download_tests = sum(avg_d_kbps * frac_tests, na.rm = T) / 1000,
+            upload_devices = sum(avg_u_kbps * frac_devices, na.rm = T) / 1000,
+            upload_tests = sum(avg_u_kbps * frac_tests, na.rm = T) / 1000,
+            latency_devices = sum(avg_lat_ms * frac_devices, na.rm = T),
+            latency_tests = sum(avg_lat_ms * frac_tests),
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 ```
@@ -174,6 +138,7 @@ dc_ookla_bg_3 <- dc_ookla_bg_2 %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 ```
 
+# read in census geogs
 
 ```{r}
 va.tr <- get_acs(geography = "tract",
@@ -226,6 +191,7 @@ dc.ct <- get_acs(geography = "county",
                  geometry = TRUE)
 ```
 
+# get Virginia data
 
 ```{r}
 # get VA HEALTH DISTRICTS
@@ -233,7 +199,7 @@ health_district <- read.csv("/project/biocomplexity/sdad/projects_data/vdh/va_co
 health_district$county_id <- as.character(health_district$county_id)
 
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
-health_district_geoids <- st_read(con, query = "SELECT * FROM dc_common.va_hd_sdad_2021_virginia_health_district_geoids")
+health_district_geoids <- st_read(con, query = "SELECT * FROM dc_geographies.va_hd_vdh_2021_health_district_geo_names")
 dbDisconnect(con)
 
 health_district_2 <- left_join(health_district, health_district_geoids, by = c("health_district" = "region_name"))
@@ -305,6 +271,7 @@ va_ookla_hd <- va_ookla_bg_2 %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 ```
 
+# get Maryland and DC data
 
 ```{r}
 md_ookla_bg_2$tract <- substr(md_ookla_bg_2$GEOID, 1, 11)
@@ -419,7 +386,7 @@ dc_dbWriteTable(con, "dc_digital_communications", "dc_ct_ookla_2019_2021_speed_m
 dbDisconnect(con)
 ```
 
-# get data for NCR
+# get NCR speeds
 
 ```{r}
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
@@ -447,7 +414,7 @@ dc_dbWriteTable(con, "dc_digital_communications", "ncr_ct_ookla_2019_2021_speed_
 dbDisconnect(con)
 ```
 
-
+# get initial Virginia quarter data
 
 ```{r}
 bg_data_quarters2 <- st_drop_geometry(va_ookla_bg) %>%
@@ -502,7 +469,7 @@ va.bg <- get_acs(geography = "block group",
 va.bg$w_internet <- va.bg$tpopE - va.bg$no_internetE
 ```
 
-#
+# get initial distributions and % above thresholds
 
 ```{r}
 va_merged_data_down_devices$above_100_down <- pnorm(100, va_merged_data_down_devices$download_devices,
@@ -551,7 +518,7 @@ va_merged_data_d <- st_drop_geometry(left_join(va.bg, va_merged_data_c, by = "GE
          perc_total_25_3_using_tests = rowMins(cbind(perc_total_above_25_down_using_tests, perc_total_above_3_up_using_tests)))
 ```
 
-#
+# get % for tract, county, and health district
 
 ```{r}
 va_merged_data_e <- va_merged_data_d %>%
@@ -696,7 +663,7 @@ va_hd_percs <- va_merged_data_e %>%
   drop_na()
 ```
 
-# DC
+# get initial DC quarter data
 
 ```{r}
 bg_data_quarters2 <- st_drop_geometry(dc_ookla_bg) %>%
@@ -751,6 +718,7 @@ dc.bg <- get_acs(geography = "block group",
 dc.bg$w_internet <- dc.bg$tpopE - dc.bg$no_internetE
 ```
 
+# get initial distributions and % above thresholds
 
 ```{r}
 dc_merged_data_down_devices$above_100_down <- pnorm(100, dc_merged_data_down_devices$download_devices,
@@ -799,6 +767,7 @@ dc_merged_data_d <- st_drop_geometry(left_join(dc.bg, dc_merged_data_c, by = "GE
          perc_total_25_3_using_tests = rowMins(cbind(perc_total_above_25_down_using_tests, perc_total_above_3_up_using_tests)))
 ```
 
+# get % for tract and county
 
 ```{r}
 dc_merged_data_e <- dc_merged_data_d %>%
@@ -914,7 +883,7 @@ dc_ct_percs <- dc_merged_data_e %>%
   drop_na()
 ```
 
-# Maryland
+# get initial Maryland quarter data
 
 ```{r}
 bg_data_quarters2 <- st_drop_geometry(md_ookla_bg) %>%
@@ -969,6 +938,7 @@ md.bg <- get_acs(geography = "block group",
 md.bg$w_internet <- md.bg$tpopE - md.bg$no_internetE
 ```
 
+# get initial distributions and % above thresholds
 
 ```{r}
 md_merged_data_down_devices$above_100_down <- pnorm(100, md_merged_data_down_devices$download_devices,
@@ -1017,6 +987,7 @@ md_merged_data_d <- st_drop_geometry(left_join(md.bg, md_merged_data_c, by = "GE
          perc_total_25_3_using_tests = rowMins(cbind(perc_total_above_25_down_using_tests, perc_total_above_3_up_using_tests)))
 ```
 
+# get % for tract and county
 
 ```{r}
 md_merged_data_e <- md_merged_data_d %>%
@@ -1132,7 +1103,7 @@ md_ct_percs <- md_merged_data_e %>%
   drop_na()
 ```
 
-
+# finish formatting measurements
 
 ```{r}
 # tract level
@@ -1237,6 +1208,7 @@ final_va_hd_percs <- va_hd_percs %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 ```
 
+# send tract, county, and health district data to database
 
 ```{r}
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
@@ -1304,7 +1276,7 @@ dc_dbWriteTable(con, "dc_digital_communications", "md_bg_ookla_2019_2021_percent
 dbDisconnect(con)
 ```
 
-
+# send ncr data to database
 
 ```{r}
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
