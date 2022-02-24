@@ -24,6 +24,7 @@ library(tidygeocoder)
 # combine measurements to block group level
 
 ```{r}
+# read in block group quarter data, from the last step in the sql code
 source("~/git/VDH/src/helper_functions.R")
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 va_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.va_bg_ookla_2019_2021_all_quarters_intersection")
@@ -31,6 +32,7 @@ md_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.md_bg_ookla_2019_2
 dc_ookla_bg <- st_read(con, query = "SELECT * FROM dc_working.dc_bg_ookla_2019_2021_all_quarters_intersection")
 dbDisconnect(con)
 
+# get VA block group summary
 va_ookla_bg_2 <- st_drop_geometry(va_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
@@ -44,6 +46,7 @@ va_ookla_bg_2 <- st_drop_geometry(va_ookla_bg)  %>%
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
+# get MD block group summary
 md_ookla_bg_2 <- st_drop_geometry(md_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
@@ -57,6 +60,7 @@ md_ookla_bg_2 <- st_drop_geometry(md_ookla_bg)  %>%
             devices = sum(devices * tile_percent, na.rm = T),
             tests = sum(tests * tile_percent, na.rm = T))
 
+# get DC block group summary
 dc_ookla_bg_2 <- st_drop_geometry(dc_ookla_bg)  %>%
   group_by(GEOID, year) %>%
   mutate(frac_devices = devices * tile_percent / sum(devices * tile_percent, na.rm = T),
@@ -74,6 +78,7 @@ dc_ookla_bg_2 <- st_drop_geometry(dc_ookla_bg)  %>%
 # format block group measurements
 
 ```{r}
+# get ACS block groups
 va.bg <- get_acs(geography = "block group",
                  year = 2019,
                  variables = c(tpop = "B01003_001"),
@@ -98,6 +103,7 @@ dc.bg <- get_acs(geography = "block group",
                  output = "wide",
                  geometry = TRUE)
 
+# format VA block group measurements
 va_ookla_bg_3 <- va_ookla_bg_2 %>%
   merge(st_drop_geometry(va.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
@@ -111,6 +117,7 @@ va_ookla_bg_3 <- va_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format MD block group measurements
 md_ookla_bg_3 <- md_ookla_bg_2 %>%
   merge(st_drop_geometry(md.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
@@ -124,6 +131,7 @@ md_ookla_bg_3 <- md_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format DC block group measurements
 dc_ookla_bg_3 <- dc_ookla_bg_2 %>%
   merge(st_drop_geometry(dc.bg)[, c("GEOID", "NAME")]) %>%
   rename(avg_down_using_devices = download_devices, avg_up_using_devices = upload_devices, avg_lat_using_devices = latency_devices,
@@ -141,6 +149,7 @@ dc_ookla_bg_3 <- dc_ookla_bg_2 %>%
 # read in census geogs
 
 ```{r}
+# tract level ACS
 va.tr <- get_acs(geography = "tract",
                  year = 2019,
                  variables = c(tpop = "B01003_001"),
@@ -165,7 +174,7 @@ dc.tr <- get_acs(geography = "tract",
                  output = "wide",
                  geometry = TRUE)
 
-
+# county level ACS
 va.ct <- get_acs(geography = "county",
                  year = 2019,
                  variables = c(tpop = "B01003_001"),
@@ -194,7 +203,7 @@ dc.ct <- get_acs(geography = "county",
 # get Virginia data
 
 ```{r}
-# get VA HEALTH DISTRICTS
+# get VA health Districts
 health_district <- read.csv("/project/biocomplexity/sdad/projects_data/vdh/va_county_to_hd.csv")
 health_district$county_id <- as.character(health_district$county_id)
 
@@ -204,10 +213,12 @@ dbDisconnect(con)
 
 health_district_2 <- left_join(health_district, health_district_geoids, by = c("health_district" = "region_name"))
 
+# add tract, county, and health district columns
 va_ookla_bg_2$tract <- substr(va_ookla_bg_2$GEOID, 1, 11)
 va_ookla_bg_2$county <- substr(va_ookla_bg_2$GEOID, 1, 5)
 va_ookla_bg_2 <- left_join(va_ookla_bg_2, health_district_2[, c("county_id", "health_district", "geoid")], by = c("county" = "county_id"))
 
+# format VA tract data
 va_ookla_tr <- va_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -229,6 +240,7 @@ va_ookla_tr <- va_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format VA county data
 va_ookla_ct <- va_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -250,6 +262,7 @@ va_ookla_ct <- va_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format VA health district data
 va_ookla_hd <- va_ookla_bg_2 %>%
   group_by(geoid, health_district, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -274,9 +287,11 @@ va_ookla_hd <- va_ookla_bg_2 %>%
 # get Maryland and DC data
 
 ```{r}
+# add tract and county columns
 md_ookla_bg_2$tract <- substr(md_ookla_bg_2$GEOID, 1, 11)
 md_ookla_bg_2$county <- substr(md_ookla_bg_2$GEOID, 1, 5)
 
+# format MD tract data
 md_ookla_tr <- md_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -298,6 +313,7 @@ md_ookla_tr <- md_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format MD county data
 md_ookla_ct <- md_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -319,9 +335,11 @@ md_ookla_ct <- md_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# add tract and county columns
 dc_ookla_bg_2$tract <- substr(dc_ookla_bg_2$GEOID, 1, 11)
 dc_ookla_bg_2$county <- substr(dc_ookla_bg_2$GEOID, 1, 5)
 
+# format DC tract data
 dc_ookla_tr <- dc_ookla_bg_2 %>%
   group_by(tract, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -343,6 +361,7 @@ dc_ookla_tr <- dc_ookla_bg_2 %>%
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# format DC county data
 dc_ookla_ct <- dc_ookla_bg_2 %>%
   group_by(county, year) %>%
   summarise(download_devices = sum(download_devices * devices, na.rm = T) / sum(devices, na.rm = T),
@@ -363,12 +382,12 @@ dc_ookla_ct <- dc_ookla_bg_2 %>%
          measure_units = ifelse(measure %in% c("avg_down_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_up_using_tests"), "Mb/sec",
                                 ifelse(measure %in% c("avg_lat_using_devices", "avg_lat_using_tests"), "ms", NA))) %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
-
 ```
 
 # send to database
 
 ```{r}
+# send bg, tr, ct, and hd data to database (without any subsetting)
 source("~/git/VDH/src/helper_functions.R")
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021_speed_measurements", va_ookla_bg_3)
@@ -389,6 +408,7 @@ dbDisconnect(con)
 # get NCR speeds
 
 ```{r}
+# read in data to be subset (could use the data above)
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 va_ookla_bg_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_bg_ookla_2019_2021_speed_measurements")
 va_ookla_tr_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_tr_ookla_2019_2021_speed_measurements")
@@ -403,10 +423,12 @@ dc_ookla_tr_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communicat
 dc_ookla_ct_for_ncr <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_ct_ookla_2019_2021_speed_measurements")
 dbDisconnect(con)
 
+# subset
 ncr_ookla_bg <- rbind(va_ookla_bg_for_ncr, md_ookla_bg_for_ncr, dc_ookla_bg_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 ncr_ookla_tr <- rbind(va_ookla_tr_for_ncr, md_ookla_tr_for_ncr, dc_ookla_tr_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 ncr_ookla_ct <- rbind(va_ookla_ct_for_ncr, md_ookla_ct_for_ncr, dc_ookla_ct_for_ncr) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 
+# send to db
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 dc_dbWriteTable(con, "dc_digital_communications", "ncr_bg_ookla_2019_2021_speed_measurements", ncr_ookla_bg)
 dc_dbWriteTable(con, "dc_digital_communications", "ncr_tr_ookla_2019_2021_speed_measurements", ncr_ookla_tr)
@@ -456,7 +478,7 @@ va_merged_data_up_tests <- va_merged_data %>%
   filter(measure == "avg_up_using_tests") %>%
   mutate(sd_county_up_tests = sqrt(sum(tests * (upload_tests - value) ^ 2) / (sum(tests, na.rm = T) - 1)))
 
-# 
+# Virginia ACS % with internet
 va.bg <- get_acs(geography = "block group",
            year = 2019,
            variables = c(bg_pop = "B01003_001",
@@ -492,7 +514,7 @@ va_merged_data_up_tests$above_3_up <- pnorm(3, va_merged_data_up_tests$upload_te
 
 va_merged_data_a <- merge(va_merged_data_down_devices[, c("GEOID", "quarter", "year","above_100_down", "above_25_down")], va_merged_data_up_devices[, c("GEOID", "quarter", "year", "above_20_up", "above_3_up")], by = c("GEOID", "quarter", "year"))
 va_merged_data_b <- merge(va_merged_data_down_tests[, c("GEOID", "quarter", "year","above_100_down", "above_25_down")], va_merged_data_up_tests[, c("GEOID", "quarter", "year", "above_20_up", "above_3_up")], by = c("GEOID", "quarter", "year"))
-#va_merged_data_c <-
+
 va_merged_data_c <- merge(va_merged_data_a, va_merged_data_b, by = c("GEOID", "quarter", "year")) %>%
   rename(perc_w_int_above_100_down_using_devices = above_100_down.x, perc_w_int_above_25_down_using_devices = above_25_down.x,
          perc_w_int_above_20_up_using_devices = above_20_up.x, perc_w_int_above_3_up_using_devices = above_3_up.x,
@@ -705,7 +727,7 @@ dc_merged_data_up_tests <- dc_merged_data %>%
   filter(measure == "avg_up_using_tests") %>%
   mutate(sd_county_up_tests = sqrt(sum(tests * (upload_tests - value) ^ 2) / (sum(tests, na.rm = T) - 1)))
 
-# 
+# D.C. ACS % with internet
 dc.bg <- get_acs(geography = "block group",
            year = 2019,
            variables = c(bg_pop = "B01003_001",
@@ -925,7 +947,7 @@ md_merged_data_up_tests <- md_merged_data %>%
   filter(measure == "avg_up_using_tests") %>%
   mutate(sd_county_up_tests = sqrt(sum(tests * (upload_tests - value) ^ 2) / (sum(tests, na.rm = T) - 1)))
 
-# 
+# Maryland ACS % with internet
 md.bg <- get_acs(geography = "block group",
            year = 2019,
            variables = c(bg_pop = "B01003_001",
@@ -1211,6 +1233,7 @@ final_va_hd_percs <- va_hd_percs %>%
 # send tract, county, and health district data to database
 
 ```{r}
+# send to db
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 dc_dbWriteTable(con, "dc_digital_communications", "va_tr_ookla_2019_2021_percent_above_threshold", final_va_tr_percs)
 dc_dbWriteTable(con, "dc_digital_communications", "va_ct_ookla_2019_2021_percent_above_threshold", final_va_ct_percs)
@@ -1227,6 +1250,7 @@ dbDisconnect(con)
 # only thing that we are missing is block group level percent above/below threshold
 
 ```{r}
+# formatting virginia block group data
 final_va_bg_percs <- va_merged_data_e %>%
   gather(measure, value, c("perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices",
                            "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests",
@@ -1241,6 +1265,7 @@ final_va_bg_percs <- va_merged_data_e %>%
   select("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units") %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# formatting dc block group data
 final_dc_bg_percs <- dc_merged_data_e %>%
   gather(measure, value, c("perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices",
                            "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests",
@@ -1255,6 +1280,7 @@ final_dc_bg_percs <- dc_merged_data_e %>%
   select("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units") %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# formatting maryland block group data
 final_md_bg_percs <- md_merged_data_e %>%
   gather(measure, value, c("perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices",
                            "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests",
@@ -1269,6 +1295,7 @@ final_md_bg_percs <- md_merged_data_e %>%
   select("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units") %>%
   relocate("geoid", "region_type", "region_name", "year", "measure", "value", "measure_type", "measure_units")
 
+# send to db
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 dc_dbWriteTable(con, "dc_digital_communications", "va_bg_ookla_2019_2021_percent_above_threshold", final_va_bg_percs)
 dc_dbWriteTable(con, "dc_digital_communications", "dc_bg_ookla_2019_2021_percent_above_threshold", final_dc_bg_percs)
@@ -1279,6 +1306,7 @@ dbDisconnect(con)
 # send ncr data to database
 
 ```{r}
+# read in dcmdva data for ncr subsetting
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 va_ookla_bg_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_bg_ookla_2019_2021_percent_above_threshold")
 va_ookla_tr_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.va_tr_ookla_2019_2021_percent_above_threshold")
@@ -1293,17 +1321,16 @@ dc_ookla_tr_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communic
 dc_ookla_ct_for_ncr.2 <- st_read(con, query = "SELECT * FROM dc_digital_communications.dc_ct_ookla_2019_2021_percent_above_threshold")
 dbDisconnect(con)
 
+# subset data
 ncr_ookla_bg.2 <- rbind(va_ookla_bg_for_ncr.2, md_ookla_bg_for_ncr.2, dc_ookla_bg_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 ncr_ookla_tr.2 <- rbind(va_ookla_tr_for_ncr.2, md_ookla_tr_for_ncr.2, dc_ookla_tr_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 ncr_ookla_ct.2 <- rbind(va_ookla_ct_for_ncr.2, md_ookla_ct_for_ncr.2, dc_ookla_ct_for_ncr.2) %>% filter(substr(geoid, 1, 5) %in% c("51013", "51059", "51107", "51510", "51600", "51153", "51683", "51685", "51610", "11001", "24031", "24033", "24017", "24021"))
 
+# send ncr data to db
 con <- get_db_conn(db_pass = "rsu8zvrsu8zv")
 dc_dbWriteTable(con, "dc_digital_communications", "ncr_bg_ookla_2019_2021_percent_above_threshold", ncr_ookla_bg.2)
 dc_dbWriteTable(con, "dc_digital_communications", "ncr_tr_ookla_2019_2021_percent_above_threshold", ncr_ookla_tr.2)
 dc_dbWriteTable(con, "dc_digital_communications", "ncr_ct_ookla_2019_2021_percent_above_threshold", ncr_ookla_ct.2)
 dbDisconnect(con)
 ```
-
-
-
 
