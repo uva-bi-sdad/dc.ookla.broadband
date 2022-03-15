@@ -1,0 +1,132 @@
+{
+  "name": "dc.ookla.broadband",
+  "data": [
+    {
+      "name": "percent_above_threshold",
+      "variables": ["perc_w_int_above_100_down_using_devices", "perc_w_int_above_3_up_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_20_up_using_tests", "perc_w_int_above_25_down_using_tests", "perc_w_int_above_3_up_using_tests", "perc_w_int_100_20_using_devices", "perc_w_int_25_3_using_devices", "perc_w_int_100_20_using_tests", "perc_w_int_25_3_using_tests", "perc_total_above_100_down_using_devices", "perc_total_above_20_up_using_devices", "perc_total_above_3_up_using_devices", "perc_total_above_25_down_using_devices", "perc_total_above_20_up_using_tests", "perc_total_above_100_down_using_tests", "perc_total_above_25_down_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices", "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests"],
+      "file": "dcmdva_hdcttrbg_2019_2021q3_percent_above_threshold.csv.xz",
+      "size": 8955944,
+      "md5": "76e6f2e155dfb88ebe7926bc9644d63f"
+    },
+    {
+      "name": "speed_measurements",
+      "variables": ["avg_down_using_devices", "avg_up_using_devices", "avg_lat_using_devices", "avg_down_using_tests", "avg_up_using_tests", "avg_lat_using_tests", "devices", "tests"],
+      "file": "dcmdva_hdcttrbg_2019_2021q3_speed_measurements.csv.xz",
+      "size": 3320496,
+      "md5": "822a31ea38e56e6c177dbbd095798c26"
+    },
+    {
+      "name": "percent_above_threshold_fixed",
+      "variables": ["perc_w_int_above_100_down_using_devices", "perc_w_int_100_20_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices", "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests", "perc_w_int_above_20_up_using_tests", "perc_w_int_above_3_up_using_tests", "perc_w_int_25_3_using_devices", "perc_w_int_100_20_using_tests", "perc_w_int_25_3_using_tests", "perc_total_above_20_up_using_devices", "perc_total_above_100_down_using_devices", "perc_total_above_3_up_using_devices", "perc_total_above_25_down_using_devices", "perc_total_above_20_up_using_tests", "perc_total_100_20_using_devices", "perc_total_above_100_down_using_tests", "perc_total_above_25_down_using_tests", "perc_total_above_3_up_using_tests", "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests"],
+      "file": "ncr_cttrbg_2019_2021_percent_above_threshold_fixed.csv.xz",
+      "size": 2868712,
+      "md5": "26ac7c5a646180916f1b8030017dbf43"
+    },
+    {
+      "name": "percent_above_threshold_mobile",
+      "variables": ["perc_w_int_above_100_down_using_devices", "perc_w_int_100_20_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices", "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests", "perc_w_int_25_3_using_devices", "perc_w_int_above_20_up_using_tests", "perc_w_int_above_3_up_using_tests", "perc_w_int_100_20_using_tests", "perc_w_int_25_3_using_tests", "perc_total_above_100_down_using_devices", "perc_total_above_25_down_using_devices", "perc_total_above_3_up_using_devices", "perc_total_above_100_down_using_tests", "perc_total_above_20_up_using_tests", "perc_total_100_20_using_devices", "perc_total_above_20_up_using_devices", "perc_total_25_3_using_devices", "perc_total_above_25_down_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests"],
+      "file": "ncr_cttrbg_2019_2021_percent_above_threshold_mobile.csv.xz",
+      "size": 3143204,
+      "md5": "cf5def406537fec89da70d3d6ed19506"
+    },
+    {
+      "name": "speed_measurements_fixed",
+      "variables": ["avg_down_using_devices", "avg_up_using_devices", "avg_lat_using_devices", "avg_down_using_tests", "avg_up_using_tests", "avg_lat_using_tests", "devices", "tests"],
+      "file": "ncr_cttrbg_2019_2021_speed_measurements_fixed.csv.xz",
+      "size": 1096732,
+      "md5": "f1690ae69605b6989886e5e733dae47f"
+    },
+    {
+      "name": "speed_measurements_mobile",
+      "variables": ["avg_down_using_devices", "avg_up_using_devices", "avg_lat_using_devices", "avg_down_using_tests", "avg_up_using_tests", "avg_lat_using_tests", "devices", "tests"],
+      "file": "ncr_cttrbg_2019_2021_speed_measurements_mobile.csv.xz",
+      "size": 1107988,
+      "md5": "0c444e3d7c5692c490f88c3da9eb97ee"
+    },
+    {
+      "name": "percent_above_threshold_fixed",
+      "variables": ["perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices", "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests", "perc_w_int_above_20_up_using_tests", "perc_w_int_above_3_up_using_tests", "perc_w_int_100_20_using_devices", "perc_w_int_25_3_using_devices", "perc_w_int_100_20_using_tests", "perc_w_int_25_3_using_tests", "perc_total_above_100_down_using_devices", "perc_total_above_25_down_using_devices", "perc_total_above_20_up_using_devices", "perc_total_above_3_up_using_devices", "perc_total_above_100_down_using_tests", "perc_total_above_25_down_using_tests", "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices", "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests"],
+      "file": "va_hdcttr_2019_2021_percent_above_threshold_fixed.csv.xz",
+      "size": 1473876,
+      "md5": "e9974d8746de154231ff38b12f6d92bd"
+    },
+    {
+      "name": "percent_above_threshold_mobile",
+      "variables": ["perc_w_int_above_100_down_using_devices", "perc_w_int_above_25_down_using_devices", "perc_w_int_above_20_up_using_devices", "perc_w_int_above_3_up_using_devices", "perc_w_int_above_100_down_using_tests", "perc_w_int_above_25_down_using_tests", "perc_w_int_above_20_up_using_tests", "perc_w_int_above_3_up_using_tests", "perc_w_int_100_20_using_devices", "perc_w_int_25_3_using_devices", "perc_w_int_100_20_using_tests", "perc_w_int_25_3_using_tests", "perc_total_above_100_down_using_devices", "perc_total_above_25_down_using_devices", "perc_total_above_20_up_using_devices", "perc_total_above_3_up_using_devices", "perc_total_above_100_down_using_tests", "perc_total_above_25_down_using_tests", "perc_total_above_20_up_using_tests", "perc_total_above_3_up_using_tests", "perc_total_100_20_using_devices", "perc_total_25_3_using_devices", "perc_total_100_20_using_tests", "perc_total_25_3_using_tests"],
+      "file": "va_hdcttr_2019_2021_percent_above_threshold_mobile.csv.xz",
+      "size": 1570472,
+      "md5": "e227092fb08718aa66b4e0b3cdad39ee"
+    },
+    {
+      "name": "speed_measurements_fixed",
+      "variables": ["avg_down_using_devices", "avg_lat_using_devices", "avg_up_using_devices", "avg_down_using_tests", "avg_lat_using_tests", "avg_up_using_tests", "devices", "tests"],
+      "file": "va_hdcttr_2019_2021_speed_measurements_fixed.csv.xz",
+      "size": 520456,
+      "md5": "9fd276701585850f03f860f849f960b2"
+    },
+    {
+      "name": "speed_measurements_mobile",
+      "variables": ["avg_down_using_devices", "avg_lat_using_devices", "avg_up_using_devices", "avg_lat_using_tests", "avg_down_using_tests", "avg_up_using_tests", "devices", "tests"],
+      "file": "va_hdcttr_2019_2021_speed_measurements_mobile.csv.xz",
+      "size": 522796,
+      "md5": "411a913394e6080bde7d50875ee238ec"
+    }
+  ],
+  "distributions": {
+    "dataverse": {
+      "id": 55742,
+      "doi": "doi:10.18130/V3/7VXR00",
+      "server": "https://dataverse.lib.virginia.edu/",
+      "data": [
+        {
+          "file": "ncr_cttrbg_2019_2021_percent_above_threshold_fixed.csv.xz",
+          "id": 55908,
+          "size": 2868712,
+          "md5": "26ac7c5a646180916f1b8030017dbf43"
+        },
+        {
+          "file": "ncr_cttrbg_2019_2021_percent_above_threshold_mobile.csv.xz",
+          "id": 55904,
+          "size": 3143204,
+          "md5": "cf5def406537fec89da70d3d6ed19506"
+        },
+        {
+          "file": "ncr_cttrbg_2019_2021_speed_measurements_fixed.csv.xz",
+          "id": 55901,
+          "size": 1096732,
+          "md5": "f1690ae69605b6989886e5e733dae47f"
+        },
+        {
+          "file": "ncr_cttrbg_2019_2021_speed_measurements_mobile.csv.xz",
+          "id": 55906,
+          "size": 1107988,
+          "md5": "0c444e3d7c5692c490f88c3da9eb97ee"
+        },
+        {
+          "file": "va_hdcttr_2019_2021_percent_above_threshold_fixed.csv.xz",
+          "id": 55903,
+          "size": 1473876,
+          "md5": "e9974d8746de154231ff38b12f6d92bd"
+        },
+        {
+          "file": "va_hdcttr_2019_2021_percent_above_threshold_mobile.csv.xz",
+          "id": 55905,
+          "size": 1570472,
+          "md5": "e227092fb08718aa66b4e0b3cdad39ee"
+        },
+        {
+          "file": "va_hdcttr_2019_2021_speed_measurements_fixed.csv.xz",
+          "id": 55902,
+          "size": 520456,
+          "md5": "9fd276701585850f03f860f849f960b2"
+        },
+        {
+          "file": "va_hdcttr_2019_2021_speed_measurements_mobile.csv.xz",
+          "id": 55907,
+          "size": 522796,
+          "md5": "411a913394e6080bde7d50875ee238ec"
+        }
+      ]
+    }
+  }
+}
