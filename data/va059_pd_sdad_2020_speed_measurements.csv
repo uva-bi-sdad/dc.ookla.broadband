@@ -1,0 +1,113 @@
+"geoid","region_type","region_name","year","measure","value"
+"51059_pd_a","planning district","Annandale","2020","avg_down_using_devices",144.60754120956
+"51059_pd_a","planning district","Annandale","2020","avg_down_using_tests",143.597538093463
+"51059_pd_a","planning district","Annandale","2020","avg_lat_using_devices",8.26569059219726
+"51059_pd_a","planning district","Annandale","2020","avg_lat_using_tests",8.29526309489051
+"51059_pd_a","planning district","Annandale","2020","avg_up_using_devices",97.7651706198338
+"51059_pd_a","planning district","Annandale","2020","avg_up_using_tests",96.9830650110915
+"51059_pd_a","planning district","Annandale","2020","devices",5664.74035512961
+"51059_pd_a","planning district","Annandale","2020","tests",20920.0349718898
+"51059_pd_b","planning district","Baileys","2020","avg_down_using_devices",138.249990176334
+"51059_pd_b","planning district","Baileys","2020","avg_down_using_tests",136.569328258272
+"51059_pd_b","planning district","Baileys","2020","avg_lat_using_devices",8.62439110049743
+"51059_pd_b","planning district","Baileys","2020","avg_lat_using_tests",8.65592763456469
+"51059_pd_b","planning district","Baileys","2020","avg_up_using_devices",79.7146353056338
+"51059_pd_b","planning district","Baileys","2020","avg_up_using_tests",78.7631474088467
+"51059_pd_b","planning district","Baileys","2020","devices",2850.15170530703
+"51059_pd_b","planning district","Baileys","2020","tests",10626.5202843092
+"51059_pd_br","planning district","Bull Run","2020","avg_down_using_devices",162.766707802582
+"51059_pd_br","planning district","Bull Run","2020","avg_down_using_tests",162.86853060076
+"51059_pd_br","planning district","Bull Run","2020","avg_lat_using_devices",8.58084828640589
+"51059_pd_br","planning district","Bull Run","2020","avg_lat_using_tests",8.57827044207948
+"51059_pd_br","planning district","Bull Run","2020","avg_up_using_devices",109.322530656565
+"51059_pd_br","planning district","Bull Run","2020","avg_up_using_tests",109.184309654184
+"51059_pd_br","planning district","Bull Run","2020","devices",11862.6149266758
+"51059_pd_br","planning district","Bull Run","2020","tests",47469.5147766367
+"51059_pd_f","planning district","Fairfax","2020","avg_down_using_devices",154.899620502095
+"51059_pd_f","planning district","Fairfax","2020","avg_down_using_tests",154.282751720022
+"51059_pd_f","planning district","Fairfax","2020","avg_lat_using_devices",8.73080256650759
+"51059_pd_f","planning district","Fairfax","2020","avg_lat_using_tests",8.65902046702366
+"51059_pd_f","planning district","Fairfax","2020","avg_up_using_devices",97.8107976147719
+"51059_pd_f","planning district","Fairfax","2020","avg_up_using_tests",97.8661413657985
+"51059_pd_f","planning district","Fairfax","2020","devices",6533.53676282245
+"51059_pd_f","planning district","Fairfax","2020","tests",25810.1271091703
+"51059_pd_j","planning district","Jefferson","2020","avg_down_using_devices",155.439503350864
+"51059_pd_j","planning district","Jefferson","2020","avg_down_using_tests",154.599585648784
+"51059_pd_j","planning district","Jefferson","2020","avg_lat_using_devices",8.04571426026435
+"51059_pd_j","planning district","Jefferson","2020","avg_lat_using_tests",8.16650628456512
+"51059_pd_j","planning district","Jefferson","2020","avg_up_using_devices",101.192668504896
+"51059_pd_j","planning district","Jefferson","2020","avg_up_using_tests",101.254437857179
+"51059_pd_j","planning district","Jefferson","2020","devices",4439.23610098063
+"51059_pd_j","planning district","Jefferson","2020","tests",16214.6199345231
+"51059_pd_l","planning district","Lincolnia","2020","avg_down_using_devices",144.435764318109
+"51059_pd_l","planning district","Lincolnia","2020","avg_down_using_tests",142.369446253009
+"51059_pd_l","planning district","Lincolnia","2020","avg_lat_using_devices",9.30617728618286
+"51059_pd_l","planning district","Lincolnia","2020","avg_lat_using_tests",9.2846571549134
+"51059_pd_l","planning district","Lincolnia","2020","avg_up_using_devices",83.3244235138651
+"51059_pd_l","planning district","Lincolnia","2020","avg_up_using_tests",82.2495539351216
+"51059_pd_l","planning district","Lincolnia","2020","devices",1439.97669912354
+"51059_pd_l","planning district","Lincolnia","2020","tests",5262.1815969953
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_down_using_devices",158.962172572889
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_down_using_tests",164.372245727083
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_lat_using_devices",8.1377693875319
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_lat_using_tests",7.98146086925965
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_up_using_devices",112.071806423403
+"51059_pd_lp","planning district","Lower Potomac","2020","avg_up_using_tests",115.820220145958
+"51059_pd_lp","planning district","Lower Potomac","2020","devices",2611.64192048399
+"51059_pd_lp","planning district","Lower Potomac","2020","tests",11423.3573142237
+"51059_pd_m","planning district","Mclean","2020","avg_down_using_devices",149.346641532212
+"51059_pd_m","planning district","Mclean","2020","avg_down_using_tests",150.10204221958
+"51059_pd_m","planning district","Mclean","2020","avg_lat_using_devices",8.16079083012925
+"51059_pd_m","planning district","Mclean","2020","avg_lat_using_tests",8.14062968800943
+"51059_pd_m","planning district","Mclean","2020","avg_up_using_devices",107.247098070387
+"51059_pd_m","planning district","Mclean","2020","avg_up_using_tests",106.316115529309
+"51059_pd_m","planning district","Mclean","2020","devices",7099.256471801
+"51059_pd_m","planning district","Mclean","2020","tests",30930.8498748105
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_down_using_devices",154.596773647553
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_down_using_tests",154.455909409028
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_lat_using_devices",9.79804666534051
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_lat_using_tests",9.71602095087169
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_up_using_devices",90.5901941037152
+"51059_pd_mv","planning district","Mount Vernon","2020","avg_up_using_tests",90.3140599545231
+"51059_pd_mv","planning district","Mount Vernon","2020","devices",6708.05046822281
+"51059_pd_mv","planning district","Mount Vernon","2020","tests",27103.8878363249
+"51059_pd_p","planning district","Pohick","2020","avg_down_using_devices",151.140401344506
+"51059_pd_p","planning district","Pohick","2020","avg_down_using_tests",150.208116438501
+"51059_pd_p","planning district","Pohick","2020","avg_lat_using_devices",8.92807470213455
+"51059_pd_p","planning district","Pohick","2020","avg_lat_using_tests",9.28270905801947
+"51059_pd_p","planning district","Pohick","2020","avg_up_using_devices",105.506697565797
+"51059_pd_p","planning district","Pohick","2020","avg_up_using_tests",104.85004000186
+"51059_pd_p","planning district","Pohick","2020","devices",12866.5972201675
+"51059_pd_p","planning district","Pohick","2020","tests",53261.9956611581
+"51059_pd_rh","planning district","Rose Hill","2020","avg_down_using_devices",159.797312853822
+"51059_pd_rh","planning district","Rose Hill","2020","avg_down_using_tests",158.984526014663
+"51059_pd_rh","planning district","Rose Hill","2020","avg_lat_using_devices",8.59883037675559
+"51059_pd_rh","planning district","Rose Hill","2020","avg_lat_using_tests",8.47880956906416
+"51059_pd_rh","planning district","Rose Hill","2020","avg_up_using_devices",105.397799854467
+"51059_pd_rh","planning district","Rose Hill","2020","avg_up_using_tests",105.716339742947
+"51059_pd_rh","planning district","Rose Hill","2020","devices",5039.88758075171
+"51059_pd_rh","planning district","Rose Hill","2020","tests",20475.5890337937
+"51059_pd_s","planning district","Springfield","2020","avg_down_using_devices",154.713528950586
+"51059_pd_s","planning district","Springfield","2020","avg_down_using_tests",154.566700318242
+"51059_pd_s","planning district","Springfield","2020","avg_lat_using_devices",8.36223425078757
+"51059_pd_s","planning district","Springfield","2020","avg_lat_using_tests",8.26895333959087
+"51059_pd_s","planning district","Springfield","2020","avg_up_using_devices",109.39589717837
+"51059_pd_s","planning district","Springfield","2020","avg_up_using_tests",109.078528259781
+"51059_pd_s","planning district","Springfield","2020","devices",4055.59702212865
+"51059_pd_s","planning district","Springfield","2020","tests",15412.2558566454
+"51059_pd_up","planning district","Upper Potomac","2020","avg_down_using_devices",164.999041720024
+"51059_pd_up","planning district","Upper Potomac","2020","avg_down_using_tests",164.852478756029
+"51059_pd_up","planning district","Upper Potomac","2020","avg_lat_using_devices",8.45192980621239
+"51059_pd_up","planning district","Upper Potomac","2020","avg_lat_using_tests",8.45748000408573
+"51059_pd_up","planning district","Upper Potomac","2020","avg_up_using_devices",110.968869041787
+"51059_pd_up","planning district","Upper Potomac","2020","avg_up_using_tests",110.701344554675
+"51059_pd_up","planning district","Upper Potomac","2020","devices",18532.3341989062
+"51059_pd_up","planning district","Upper Potomac","2020","tests",72835.2453160445
+"51059_pd_v","planning district","Vienna","2020","avg_down_using_devices",153.993486366311
+"51059_pd_v","planning district","Vienna","2020","avg_down_using_tests",154.074273851191
+"51059_pd_v","planning district","Vienna","2020","avg_lat_using_devices",8.67163768686522
+"51059_pd_v","planning district","Vienna","2020","avg_lat_using_tests",8.76663278829849
+"51059_pd_v","planning district","Vienna","2020","avg_up_using_devices",105.842924822484
+"51059_pd_v","planning district","Vienna","2020","avg_up_using_tests",105.906683940853
+"51059_pd_v","planning district","Vienna","2020","devices",5932.85168375787
+"51059_pd_v","planning district","Vienna","2020","tests",23488.9924820823
